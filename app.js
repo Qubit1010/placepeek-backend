@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 
 console.log(process.env.DB_USER);
 console.log(process.env.DB_PASSWORD);
+console.log(process.env.JWT_KEY);
 app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 app.use((req, res, next) => {
