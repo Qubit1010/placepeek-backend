@@ -26,6 +26,7 @@ const signup = async (req, res, next) => {
       new HttpError("Invalid inputs passed, please check your data.", 422)
     );
   }
+
   const { name, email, password } = req.body;
 
   let existingUser;
@@ -48,12 +49,11 @@ const signup = async (req, res, next) => {
   }
 
   let hashedPassword;
-
   try {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
     const error = new HttpError(
-      "Could not create user, please try again!",
+      "Could not create user, please try again.",
       500
     );
     return next(error);
@@ -82,7 +82,7 @@ const signup = async (req, res, next) => {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
       process.env.JWT_KEY,
-      { expiresIn: "30d" }
+      { expiresIn: "1h" }
     );
   } catch (err) {
     const error = new HttpError(
@@ -111,7 +111,6 @@ const login = async (req, res, next) => {
     );
     return next(error);
   }
-
 
   // if (!existingUser || existingUser.password !== password) {
   //   const error = new HttpError(
