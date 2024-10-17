@@ -3,11 +3,12 @@ const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
-
+const cloudinary = require('cloudinary').v2
 const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
+
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
@@ -49,7 +50,6 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!places || places.length === 0) {
   if (!userWithPlaces || userWithPlaces.places.length === 0) {
     return next(
       new HttpError("Could not find places for the provided user id.", 404)
@@ -80,14 +80,26 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
+  const imageFile = req.file;
+
+  // upload image to cloudinary
+  const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+    resource_type: "image",
+  });
+  const imageUrl = imageUpload.secure_url;
+
+  console.log(imageUrl);
+
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
-    image: req.file.path,
+    image: imageUrl,
     creator: req.userData.userId,
   });
+
+  console.log(createdPlace);
 
   let user;
   try {
@@ -105,7 +117,7 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
+  // console.log(user);
 
   try {
     const sess = await mongoose.startSession();

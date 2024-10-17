@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-
+const connectCloudinary = require("./config/cloudinary.js");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
@@ -12,11 +12,11 @@ const HttpError = require("./models/http-error");
 const app = express();
 
 app.use(bodyParser.json());
-
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASSWORD);
-console.log(process.env.JWT_KEY);
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
+connectCloudinary();
+// console.log(process.env.DB_USER);
+// console.log(process.env.DB_PASSWORD);
+// console.log(process.env.JWT_KEY);
+// app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
